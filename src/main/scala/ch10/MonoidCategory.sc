@@ -1,4 +1,4 @@
-trait Monoid[T] {
+trait MonoidC[T] {
   def append(m1: T, m2: T): T
   val identity: T
 }
@@ -15,9 +15,16 @@ implicit val catScala = new Category[Function1] {
     (a: A) => a
 }
 
-def monoidCategory[M](m: Monoid[M]) = {
+def monoidCategory[M](m: MonoidC[M]) = {
   new Category[({type λ[α, β] = M})#λ] {
     def identity[A] = m.identity
     def compose[X, Y, Z](f: M, g: M) = m.append(f, g)
+  }
+}
+
+def reduce[T](ts: List[T], m: MonoidC[T]): T = {
+  ts match {
+    case Nil => m.identity
+    case x :: xs => m.append(x,reduce(xs, m)  )
   }
 }

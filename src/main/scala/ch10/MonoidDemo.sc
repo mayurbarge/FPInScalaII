@@ -45,3 +45,27 @@ def foldMapV[A,B](v: IndexedSeq[A], m: Monoid[B])(f: A => B): B = {
 
 val bird = IndexedSeq(9,1)
 foldMapV[Int, String](bird,stringMonoid)((e:Int) => e.toString)
+
+//Parallel Monoids
+object ParallelMonoids {
+  class CheapSimpleRunner[A](s1: A, s2: A, monoid: Monoid[A]) extends Runnable {
+    var result:A = null.asInstanceOf[A]
+    def start: Unit = this.run()
+    override def run() ={
+      println("********")
+      result = monoid.op(s1, s2)
+    }
+    def getT = this
+  }
+
+  import ParallelMonoids.CheapSimpleRunner
+  import stringMonoid._
+  val runner = new CheapSimpleRunner[String]( "1111","2222", stringMonoid)
+  //val runner = new CheapSimpleRunner[String](10000, "1111","2222", stringMonoid)
+  runner.start
+  Thread.sleep(1)
+
+  runner.result
+  Thread.sleep(10000)
+}
+
