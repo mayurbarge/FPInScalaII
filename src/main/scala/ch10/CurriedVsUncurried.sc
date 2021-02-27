@@ -24,4 +24,12 @@ object CurryInference {
 
   }
 
+  val x =
+  for {
+    1 <- List()
+    List() <- List()
+  } yield {
+    throw new Exception
+  }
+
 }
